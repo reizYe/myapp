@@ -12,99 +12,64 @@ var responseJSON = function (res, ret) {
 		res.json(ret);
 	}
 };
-docModel.getList = function (req, res, next) {
+
+function connect(res, sql, params) {
 	pool.getConnection(function (err, connection) {
 		// 获取前台页面传过来的参数  
-		var sql = 'SELECT * FROM login';
+
 		// 建立连接 增加一个用户信息 
-		connection.query(sql, function (err, result) {
+		connection.query(sql, params, function (err, result) {
 			if (result) {
-				result = {
+				var resul = {
 					code: 200,
 					msg: '查询成功',
 					data: result
 				};
 			}
-
 			// 以json形式，把操作结果返回给前台页面     
-			responseJSON(res, result);
-
+			responseJSON(res, resul);
 			// 释放连接  
 			connection.release();
 
 		});
 	});
+
+}
+docModel.getList = function (req, res, next) {
+	var sql = 'SELECT * FROM login';
+	connect(res, sql);
 }
 docModel.create = function (req, res, next) {
-	pool.getConnection(function (err, connection) {
-		// 获取前台页面传过来的参数  
-		var param = req.query || req.params;
-		var sql = 'INSERT INTO login(name,password,status) VALUES(?,?,?)';
-		// 建立连接 增加一个用户信息 
-		connection.query(sql, [param.name, param.password, param.status], function (err, result) {
-			if (result) {
-				result = {
-					code: 200,
-					msg: '增加成功'
-				};
-			}
-
-			// 以json形式，把操作结果返回给前台页面     
-			responseJSON(res, result);
-
-			// 释放连接  
-			connection.release();
-
-		});
-	});
+	var sql = 'INSERT INTO login(name,password,status) VALUES(?,?,?)';
+	var param = req.query || req.params;
+	var arrparam = [param.name, param.password, param.status];
+	if (param) {
+		connect(res, sql, arrparam);
+	} else {
+		connect(res, sql);
+	}
 }
 docModel.adduser = function (req, res, next) {
-	pool.getConnection(function (err, connection) {
-		// 获取前台页面传过来的参数  
-		var param = req.query || req.params;
-		var sql = 'INSERT INTO login(name,password,status) VALUES(?,?,?)';
-		// 建立连接 增加一个用户信息 
-		connection.query(sql, [param.name, param.password, param.status], function (err, result) {
-			if (result) {
-				result = {
-					code: 200,
-					msg: '增加成功'
-				};
-			}
+	var sql = 'INSERT INTO login(name,password,status) VALUES(?,?,?)';
+	var param = req.query || req.params;
+	var arrparam = [param.name, param.password, param.status];
+	if (param) {
+		connect(res, sql, arrparam);
+	} else {
+		connect(res, sql);
+	}
 
-			// 以json形式，把操作结果返回给前台页面     
-			responseJSON(res, result);
-
-			// 释放连接  
-			connection.release();
-
-		});
-	});
 }
 docModel.getById = function (req, res, next) {
-	pool.getConnection(function (err, connection) {
-		// 获取前台页面传过来的参数 
+	var sql = 'SELECT * FROM login WHERE id = ? ';
 
-		console.log(req.params.id)
-		var sql = 'SELECT * FROM login WHERE id = ? ';
-		// 建立连接 增加一个用户信息 
-		connection.query(sql, [req.params.id], function (err, result) {
-			if (result) {
-				result = {
-					code: 200,
-					msg: '查询成功',
-					data: result
-				};
-			}
+	var arrparam = [req.params.id];
+	if (arrparam.length > 0) {
+		connect(res, sql, arrparam);
+	} else {
+		connect(res, sql);
+	}
 
-			// 以json形式，把操作结果返回给前台页面     
-			responseJSON(res, result);
-
-			// 释放连接  
-			connection.release();
-
-		});
-	});
 }
 
 module.exports = docModel;

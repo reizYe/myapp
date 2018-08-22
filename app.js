@@ -30,7 +30,7 @@ app.all('*', function (req, res, next) {
 
   if (req.method == 'OPTIONS') {
     res.send(200);
-    /让options请求快速返回/
+    /*让options请求快速返回*/
   } else {
     next();
   }
